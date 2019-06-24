@@ -46,6 +46,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "nordic_common.h"
 #include "nrf_sdm.h"
 #include "ble.h"
@@ -74,6 +75,7 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_ble_scan.h"
+
 
 
 #define APP_BLE_CONN_CFG_TAG        1                                   /**< A tag identifying the SoftDevice BLE configuration. */
@@ -241,6 +243,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     ret_code_t            err_code;
     ble_gap_evt_t const * p_gap_evt = &p_ble_evt->evt.gap_evt;
     int8_t rssi;
+    double estimated_distance;
     uint8_t channel_index_rssi;
 
     switch (p_ble_evt->header.evt_id)
@@ -350,6 +353,10 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             APP_ERROR_CHECK(err_code);
 
             NRF_LOG_INFO("RSSI = %d", rssi);
+
+            estimated_distance =  pow(10.0, ((rssi + 45.0)/-40.0));
+            NRF_LOG_INFO("Distance " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(estimated_distance));
+
             //NRF_LOG_INFO("Channel Index = %d", channel_index_rssi);
 
             break;
