@@ -135,7 +135,7 @@ static ble_gap_scan_params_t const m_scan_param =
 /**@brief Names which the central applications will scan for, and which will be advertised by the peripherals.
  *  if these are set to empty strings, the UUIDs defined below will be used
  */
-static char const m_target_periph_name[] = "";      /**< If you want to connect to a peripheral using a given advertising name, type its name here. */
+static char const m_target_periph_name[] = "Nordic_Blinky";      /**< If you want to connect to a peripheral using a given advertising name, type its name here. */
 static bool is_connect_per_addr = false;            /**< If you want to connect to a peripheral with a given address, set this to true and put the correct address in the variable below. */
 
 static ble_gap_addr_t const m_target_periph_addr =
@@ -820,6 +820,7 @@ static void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, nrf_ble_gatt_evt_t const *
 static void scan_evt_handler(scan_evt_t const * p_scan_evt)
 {
     ret_code_t err_code;
+    //int rssi_adv;
     switch(p_scan_evt->scan_evt_id)
     {
         case NRF_BLE_SCAN_EVT_WHITELIST_REQUEST:
@@ -841,8 +842,12 @@ static void scan_evt_handler(scan_evt_t const * p_scan_evt)
         } break;
 
         case NRF_BLE_SCAN_EVT_FILTER_MATCH:
+            NRF_LOG_INFO("NRF_BLE_SCAN_EVT_FILTER_MATCH");
             break;
         case NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT:
+            //rssi_adv = p_scan_evt->params.req_report.rssi;
+            NRF_LOG_INFO("NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT");
+            NRF_LOG_INFO("RSSI = %d", p_scan_evt->params.p_whitelist_adv_report);
             break;
 
         default:
@@ -879,12 +884,13 @@ static void scan_init(void)
     memset(&init_scan, 0, sizeof(init_scan));
 
     init_scan.p_scan_param     = &m_scan_param;
-    init_scan.connect_if_match = true;
+    init_scan.connect_if_match = false;
     init_scan.conn_cfg_tag     = APP_BLE_CONN_CFG_TAG;
 
     err_code = nrf_ble_scan_init(&m_scan, &init_scan, scan_evt_handler);
     APP_ERROR_CHECK(err_code);
 
+    /*
     ble_uuid_t uuid =
     {
         .uuid = TARGET_UUID,
@@ -895,6 +901,9 @@ static void scan_init(void)
                                        SCAN_UUID_FILTER,
                                        &uuid);
     APP_ERROR_CHECK(err_code);
+
+    */
+    
 
     if (strlen(m_target_periph_name) != 0)
     {
@@ -916,6 +925,9 @@ static void scan_init(void)
                                            NRF_BLE_SCAN_ALL_FILTER,
                                            false);
     APP_ERROR_CHECK(err_code);
+
+    
+
 
 }
 

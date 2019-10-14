@@ -130,6 +130,37 @@ static void scan_evt_handler(scan_evt_t const * p_scan_evt)
             APP_ERROR_CHECK(err_code);
         } break;
 
+        case NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT:
+        {
+            NRF_LOG_INFO("NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT");
+            break;
+        }
+
+        case NRF_BLE_SCAN_EVT_FILTER_MATCH:
+        {
+            int read_rssi = p_scan_evt->params.filter_match.p_adv_report->rssi;
+            
+            
+            NRF_LOG_RAW_INFO("PEER ID = ")
+            for (int i = 0; i < BLE_GAP_ADDR_LEN; i++){
+                NRF_LOG_RAW_INFO("%02x", p_scan_evt->params.connected.p_connected->peer_addr.addr[i]);
+            }
+            NRF_LOG_RAW_INFO("\r\n");
+            NRF_LOG_RAW_INFO("RSSI = %d", read_rssi);
+            NRF_LOG_RAW_INFO("\r\n");
+            NRF_LOG_RAW_INFO("\r\n");
+            
+            
+            //NRF_LOG_INFO("RSSI = %d", read_rssi);
+            break;
+        }
+        case NRF_BLE_SCAN_EVT_SCAN_REQ_REPORT:
+        {
+            NRF_LOG_INFO("NRF_BLE_SCAN_EVT_SCAN_REQ_REPORT");
+            break;
+        }
+
+       
         default:
             break;
     }
@@ -145,7 +176,7 @@ static void scan_init(void)
 
     memset(&init_scan, 0, sizeof(init_scan));
 
-    init_scan.connect_if_match = true;
+    init_scan.connect_if_match = false; //CHANGED
     init_scan.conn_cfg_tag     = APP_BLE_CONN_CFG_TAG;
 
     err_code = nrf_ble_scan_init(&m_scan, &init_scan, scan_evt_handler);
@@ -366,6 +397,11 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
             //NRF_LOG_INFO("Channel Index = %d", channel_index_rssi);
 
+            break;
+
+        case BLE_GAP_EVT_SCAN_REQ_REPORT:
+        
+            NRF_LOG_INFO("BLE_GAP_EVT_SCAN_REQ_REPORT");
             break;
 
         default:
