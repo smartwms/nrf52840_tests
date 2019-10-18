@@ -66,7 +66,7 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#define SAMPLES_IN_BUFFER 10
+#define SAMPLES_IN_BUFFER 2
 volatile uint8_t state = 1;
 
 static const nrf_drv_timer_t m_timer = NRF_DRV_TIMER_INSTANCE(0);
@@ -187,14 +187,22 @@ int main(void)
     APP_ERROR_CHECK(ret_code);
 
     saadc_init();
-    saadc_sampling_event_init();
-    saadc_sampling_event_enable();
+    //saadc_sampling_event_init();
+    //saadc_sampling_event_enable();
     NRF_LOG_INFO("SAADC HAL simple example started.");
+    nrf_delay_ms(1000);
+
 
     while (1)
     {
         nrf_pwr_mgmt_run();
         NRF_LOG_FLUSH();
+        
+        nrf_drv_saadc_sample();
+        
+        //m_adc_evt_counter++;
+        
+        nrf_delay_ms(1000);
     }
 }
 
